@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import net.wimpi.modbus.procimg.MultipleUnitsProcessImage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,8 +138,15 @@ public class ModbusBINTransport extends ModbusSerialTransport {
                     m_ByteIn.reset(m_InBuffer, m_ByteInOut.size());
                     in = m_ByteIn.readUnsignedByte();
                     // check unit identifier
-                    if (in != ModbusCoupler.getReference().getUnitID()) {
-                        continue;
+                    if (ModbusCoupler.getReference().containsMultipleUnits()) {
+                        if (!ModbusCoupler.getReference().containsUnit(in)) continue;
+                        if (ModbusCoupler.getReference().getProcessImage() instanceof MultipleUnitsProcessImage) {
+                            ((MultipleUnitsProcessImage)ModbusCoupler.getReference().getProcessImage()).setCurrentUnit(in);
+                        }
+                    } else {
+                        if (in != ModbusCoupler.getReference().getUnitID()) {
+                            continue;
+                        }
                     }
                     in = m_ByteIn.readUnsignedByte();
                     // create request

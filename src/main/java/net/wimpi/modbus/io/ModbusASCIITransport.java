@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import net.wimpi.modbus.procimg.MultipleUnitsProcessImage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,9 +139,17 @@ public class ModbusASCIITransport extends ModbusSerialTransport {
                     m_ByteIn.reset(m_InBuffer, m_ByteInOut.size());
                     in = m_ByteIn.readUnsignedByte();
                     // check message with this slave unit identifier
-                    if (in != ModbusCoupler.getReference().getUnitID()) {
-                        continue;
+                    if (ModbusCoupler.getReference().containsMultipleUnits()) {
+                        if (!ModbusCoupler.getReference().containsUnit(in)) continue;
+                        if (ModbusCoupler.getReference().getProcessImage() instanceof MultipleUnitsProcessImage) {
+                            ((MultipleUnitsProcessImage)ModbusCoupler.getReference().getProcessImage()).setCurrentUnit(in);
+                        }
+                    } else {
+                        if (in != ModbusCoupler.getReference().getUnitID()) {
+                            continue;
+                        }
                     }
+
                     in = m_ByteIn.readUnsignedByte();
                     // create request
                     request = ModbusRequest.createModbusRequest(in);
@@ -221,7 +230,7 @@ public class ModbusASCIITransport extends ModbusSerialTransport {
             throw new ModbusIOException(
                     String.format("I/O exception: %s %s", ex.getClass().getSimpleName(), ex.getMessage()));
         } finally {
-            m_CommPort.disableReceiveThreshold();
+            if (m_CommPort != null) m_CommPort.disableReceiveThreshold();
         }
     }// readResponse
 
