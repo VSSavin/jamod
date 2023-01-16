@@ -139,7 +139,7 @@ abstract public class ModbusSerialTransport implements ModbusTransport {
      */
     public void setReceiveThreshold(int th) {
         try {
-            m_CommPort.enableReceiveThreshold(th); /* chars */
+            if (m_CommPort != null) m_CommPort.enableReceiveThreshold(th); /* chars */
         } catch (UnsupportedCommOperationException e) {
             logger.warn("Failed to setReceiveThreshold: {}", e.getMessage());
         }
