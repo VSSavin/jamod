@@ -20,6 +20,9 @@ import net.wimpi.modbus.procimg.DefaultProcessImageFactory;
 import net.wimpi.modbus.procimg.ProcessImage;
 import net.wimpi.modbus.procimg.ProcessImageFactory;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 /**
  * Class implemented following a Singleton pattern,
  * to couple the slave side with a master side or
@@ -41,6 +44,7 @@ public class ModbusCoupler {
     private int m_UnitID = Modbus.DEFAULT_UNIT_ID;
     private boolean m_Master = true;
     private ProcessImageFactory m_PIFactory;
+    private Collection<Integer> units = new HashSet<>();
 
     static {
         c_Self = new ModbusCoupler();
@@ -102,6 +106,29 @@ public class ModbusCoupler {
     public synchronized void setProcessImage(ProcessImage procimg) {
         m_ProcessImage = procimg;
     }// setProcessImage
+
+    /**
+     * Tests if this instance contains unit id
+     * @param unitId the unit id to be checked
+     * @return true if contains, false otherwise
+     */
+    public boolean containsUnit(int unitId) {return units.contains(unitId);}
+
+    /**
+     * Adds the unitId to the set of units
+     * @param unitId the unitId to be added
+     */
+    public void addUnit(int unitId) {units.add(unitId);}
+
+    public void addUnits(Collection<Integer> units) {this.units = new HashSet<>(units);}
+
+    /**
+     * Tests if this instance uses multiple units
+     * @return true if uses, false otherwise
+     */
+    public boolean containsMultipleUnits() {
+        return units.size() > 0;
+    }
 
     /**
      * Returns the identifier of this unit.
