@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import net.wimpi.modbus.io.ModbusTCPASCIITransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,12 @@ import net.wimpi.modbus.io.ModbusTransport;
 public class TCPMasterConnection implements ModbusSlaveConnection {
     private static final Logger logger = LoggerFactory.getLogger(TCPMasterConnection.class);
 
+    public enum ModbusEncoding {
+        TCP,
+        RTU,
+        ASCII
+    }
+
     // instance attributes
     private Socket m_Socket;
     private int m_Timeout = Modbus.DEFAULT_TIMEOUT;
@@ -51,7 +58,7 @@ public class TCPMasterConnection implements ModbusSlaveConnection {
 
     private int m_ConnectTimeoutMillis;
 
-    private boolean rtuEncoded;
+    private ModbusEncoding messageEncoding = ModbusEncoding.TCP;
 
     /**
      * Constructs a <tt>TCPMasterConnection</tt> instance
@@ -71,7 +78,13 @@ public class TCPMasterConnection implements ModbusSlaveConnection {
     public TCPMasterConnection(InetAddress adr, int port, int connectTimeoutMillis, boolean rtuEncoded) {
         this(adr, port);
         setConnectTimeoutMillis(connectTimeoutMillis);
-        this.rtuEncoded = rtuEncoded;
+        if (rtuEncoded) messageEncoding = ModbusEncoding.RTU;
+    }
+
+    public TCPMasterConnection(InetAddress adr, int port, int connectTimeoutMillis, ModbusEncoding messageEncoding) {
+        this(adr, port);
+        setConnectTimeoutMillis(connectTimeoutMillis);
+        this.messageEncoding = messageEncoding;
     }
 
     /**
@@ -127,7 +140,9 @@ public class TCPMasterConnection implements ModbusSlaveConnection {
      */
     private void prepareTransport() throws IOException {
         if (m_ModbusTransport == null) {
-            m_ModbusTransport = rtuEncoded ? new ModbusTCPRTUTransport(m_Socket) : new ModbusTCPTransport(m_Socket);
+            if (messageEncoding == ModbusEncoding.RTU) m_ModbusTransport = new ModbusTCPRTUTransport(m_Socket);
+            else if (messageEncoding == ModbusEncoding.ASCII) m_ModbusTransport = new ModbusTCPASCIITransport(m_Socket);
+            else m_ModbusTransport = new ModbusTCPTransport(m_Socket);
         } else {
             m_ModbusTransport.setSocket(m_Socket);
         }
@@ -227,7 +242,8 @@ public class TCPMasterConnection implements ModbusSlaveConnection {
     public String toString() {
         return "TCPMasterConnection [m_Socket=" + m_Socket + ", m_Timeout=" + m_Timeout + ", m_Connected=" + m_Connected
                 + ", m_Address=" + m_Address + ", m_Port=" + m_Port + ", m_ModbusTransport=" + m_ModbusTransport
-                + ", m_ConnectTimeoutMillis=" + m_ConnectTimeoutMillis + ", rtuEncoded=" + rtuEncoded + "]";
+                + ", m_ConnectTimeoutMillis=" + m_ConnectTimeoutMillis
+                + ", rtuEncoded=" + (messageEncoding == ModbusEncoding.RTU) + "]";
     }
 
     public int getConnectTimeoutMillis() {
