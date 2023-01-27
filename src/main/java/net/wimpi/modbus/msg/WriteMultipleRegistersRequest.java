@@ -23,10 +23,7 @@ import java.io.IOException;
 import net.wimpi.modbus.Modbus;
 import net.wimpi.modbus.ModbusCoupler;
 import net.wimpi.modbus.io.NonWordDataHandler;
-import net.wimpi.modbus.procimg.IllegalAddressException;
-import net.wimpi.modbus.procimg.ProcessImage;
-import net.wimpi.modbus.procimg.ProcessImageFactory;
-import net.wimpi.modbus.procimg.Register;
+import net.wimpi.modbus.procimg.*;
 
 /**
  * Class implementing a <tt>ReadMultipleRegistersRequest</tt>.
@@ -80,6 +77,9 @@ public final class WriteMultipleRegistersRequest extends ModbusRequest {
             // 2. get registers
             try {
                 // TODO: realize a setRegisterRange()?
+                if (procimg instanceof MultipleUnitsProcessImage) {
+                    ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
+                }
                 regs = procimg.getRegisterRange(this.getReference(), this.getWordCount());
                 // 3. set Register values
                 for (int i = 0; i < regs.length; i++) {

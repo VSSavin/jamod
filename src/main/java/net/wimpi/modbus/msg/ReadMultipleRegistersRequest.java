@@ -23,6 +23,7 @@ import java.io.IOException;
 import net.wimpi.modbus.Modbus;
 import net.wimpi.modbus.ModbusCoupler;
 import net.wimpi.modbus.procimg.IllegalAddressException;
+import net.wimpi.modbus.procimg.MultipleUnitsProcessImage;
 import net.wimpi.modbus.procimg.ProcessImage;
 import net.wimpi.modbus.procimg.Register;
 
@@ -80,6 +81,9 @@ public final class ReadMultipleRegistersRequest extends ModbusRequest {
         ProcessImage procimg = ModbusCoupler.getReference().getProcessImage();
         // 2. get input registers range
         try {
+            if (procimg instanceof MultipleUnitsProcessImage) {
+                ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
+            }
             regs = procimg.getRegisterRange(this.getReference(), this.getWordCount());
         } catch (IllegalAddressException iaex) {
             return createExceptionResponse(Modbus.ILLEGAL_ADDRESS_EXCEPTION);

@@ -24,6 +24,7 @@ import net.wimpi.modbus.Modbus;
 import net.wimpi.modbus.ModbusCoupler;
 import net.wimpi.modbus.procimg.DigitalOut;
 import net.wimpi.modbus.procimg.IllegalAddressException;
+import net.wimpi.modbus.procimg.MultipleUnitsProcessImage;
 import net.wimpi.modbus.procimg.ProcessImage;
 import net.wimpi.modbus.util.BitVector;
 
@@ -97,6 +98,9 @@ public final class WriteMultipleCoilsRequest extends ModbusRequest {
         ProcessImage procimg = ModbusCoupler.getReference().getProcessImage();
         // 2. get coil range
         try {
+            if (procimg instanceof MultipleUnitsProcessImage) {
+                ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
+            }
             douts = procimg.getDigitalOutRange(m_Reference, m_Coils.size());
             // 3. set coils
             for (int i = 0; i < douts.length; i++) {
