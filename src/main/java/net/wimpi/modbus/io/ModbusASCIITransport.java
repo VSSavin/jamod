@@ -119,7 +119,9 @@ public class ModbusASCIITransport extends ModbusSerialTransport {
             do {
                 // 1. Skip to FRAME_START
                 while ((in = m_InputStream.read()) != FRAME_START) {
-                    ;
+                    if (in == -1) {
+                        throw new IOException("readResponse: I/O exception - Serial port timeout.");
+                    }
                 }
                 // 2. Read to FRAME_END
                 synchronized (m_InBuffer) {
