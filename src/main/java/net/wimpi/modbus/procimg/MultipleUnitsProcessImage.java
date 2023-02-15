@@ -25,6 +25,10 @@ public class MultipleUnitsProcessImage implements ProcessImageImplementation {
         else throw new UnitNotFoundException(String.format("Unit [%s] not found!", unit));
     }
 
+    public void setLocked(boolean locked) {
+        ((SimpleProcessImage)getCurrentProcessImage()).setLocked(locked);
+    }
+
     @Override
     public DigitalOut[] getDigitalOutRange(int offset, int count) throws IllegalAddressException {
         return getCurrentProcessImage().getDigitalOutRange(offset, count);
