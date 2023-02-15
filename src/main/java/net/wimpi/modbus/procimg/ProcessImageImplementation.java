@@ -56,6 +56,11 @@ public interface ProcessImageImplementation extends ProcessImage {
     public void removeDigitalOut(DigitalOut _do);
 
     /**
+     * Removes all digital outputs
+     */
+    public void removeAllDigitalOuts();
+
+    /**
      * Sets a new <tt>DigitalIn</tt> instance at the
      * given reference.
      *
@@ -82,6 +87,11 @@ public interface ProcessImageImplementation extends ProcessImage {
      *            removed.
      */
     public void removeDigitalIn(DigitalIn di);
+
+    /**
+     * Removes all digital inputs
+     */
+    public void removeAllDigitalIn();
 
     /**
      * Sets a new <tt>InputRegister</tt> instance at the
@@ -112,6 +122,11 @@ public interface ProcessImageImplementation extends ProcessImage {
     public void removeInputRegister(InputRegister reg);
 
     /**
+     * Removes all input registers
+     */
+    public void removeAllInputRegisters();
+
+    /**
      * Sets a new <tt>Register</tt> instance at the
      * given reference.
      *
@@ -138,6 +153,11 @@ public interface ProcessImageImplementation extends ProcessImage {
      *            removed.
      */
     public void removeRegister(Register reg);
+
+    /**
+     * Removes all registers
+     */
+    public void removeAllRegisters();
 
     /**
      * Defines the set state (i.e. <b>true</b>) of

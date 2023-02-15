@@ -101,6 +101,11 @@ public class MultipleUnitsProcessImage implements ProcessImageImplementation {
     }
 
     @Override
+    public void removeAllDigitalOuts() {
+        getCurrentProcessImage().removeAllDigitalOuts();
+    }
+
+    @Override
     public void setDigitalIn(int ref, DigitalIn di) throws IllegalAddressException {
         getCurrentProcessImage().setDigitalIn(ref, di);
     }
@@ -113,6 +118,11 @@ public class MultipleUnitsProcessImage implements ProcessImageImplementation {
     @Override
     public void removeDigitalIn(DigitalIn di) {
         getCurrentProcessImage().removeDigitalIn(di);
+    }
+
+    @Override
+    public void removeAllDigitalIn() {
+        getCurrentProcessImage().removeAllDigitalIn();
     }
 
     @Override
@@ -131,6 +141,11 @@ public class MultipleUnitsProcessImage implements ProcessImageImplementation {
     }
 
     @Override
+    public void removeAllInputRegisters() {
+        getCurrentProcessImage().removeAllInputRegisters();
+    }
+
+    @Override
     public void setRegister(int ref, Register reg) throws IllegalAddressException {
         getCurrentProcessImage().setRegister(ref, reg);
     }
@@ -143,6 +158,11 @@ public class MultipleUnitsProcessImage implements ProcessImageImplementation {
     @Override
     public void removeRegister(Register reg) {
         getCurrentProcessImage().removeRegister(reg);
+    }
+
+    @Override
+    public void removeAllRegisters() {
+        getCurrentProcessImage().removeAllRegisters();
     }
 
     private ProcessImageImplementation getCurrentProcessImage() {

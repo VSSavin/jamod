@@ -68,6 +68,13 @@ public class SimpleProcessImage implements ProcessImageImplementation {
     }// removeDigitalIn
 
     @Override
+    public void removeAllDigitalIn() {
+        if (!isLocked()) {
+            m_DigitalInputs.removeAllElements();
+        }
+    }
+
+    @Override
     public void setDigitalIn(int ref, DigitalIn di) throws IllegalAddressException {
         if (!isLocked()) {
             try {
@@ -120,6 +127,13 @@ public class SimpleProcessImage implements ProcessImageImplementation {
             m_DigitalOutputs.removeElement(_do);
         }
     }// removeDigitalOut
+
+    @Override
+    public void removeAllDigitalOuts() {
+        if (!isLocked()) {
+            m_DigitalOutputs.removeAllElements();
+        }
+    }
 
     @Override
     public void setDigitalOut(int ref, DigitalOut _do) throws IllegalAddressException {
@@ -175,6 +189,13 @@ public class SimpleProcessImage implements ProcessImageImplementation {
     }// removeInputRegister
 
     @Override
+    public void removeAllInputRegisters() {
+        if (!isLocked()) {
+            m_InputRegisters.removeAllElements();
+        }
+    }
+
+    @Override
     public void setInputRegister(int ref, InputRegister reg) throws IllegalAddressException {
         if (!isLocked()) {
             try {
@@ -227,6 +248,13 @@ public class SimpleProcessImage implements ProcessImageImplementation {
             m_Registers.removeElement(reg);
         }
     }// removeRegister
+
+    @Override
+    public void removeAllRegisters() {
+        if (isLocked()) {
+            m_Registers.removeAllElements();
+        }
+    }
 
     @Override
     public void setRegister(int ref, Register reg) throws IllegalAddressException {
