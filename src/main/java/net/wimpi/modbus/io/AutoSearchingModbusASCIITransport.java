@@ -200,10 +200,12 @@ public class AutoSearchingModbusASCIITransport extends AutoSearchingModbusTransp
                     socketUnits.add(response.getUnitID());
                 } catch (ModbusIOException e) {
                     log.error(String.format("Modbus processing error [request: %s]: ", request.getHexMessage()), e);
-                    try {
-                        getTransport().close();
-                    } catch (IOException ex) {
-                        log.error("Transport close error: ", e);
+                    if (!e.getMessage().toLowerCase().contains("timed out")) {
+                        try {
+                            getTransport().close();
+                        } catch (IOException ex) {
+                            log.error("Transport close error: ", e);
+                        }
                     }
                 } catch (Exception e) {
                     log.error("Client socket write error: ", e);
