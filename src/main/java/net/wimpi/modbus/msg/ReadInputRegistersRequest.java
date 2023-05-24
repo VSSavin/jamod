@@ -82,7 +82,9 @@ public final class ReadInputRegistersRequest extends ModbusRequest {
         // 2. get input registers range
         try {
             if (procimg instanceof MultipleUnitsProcessImage) {
-                ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
+                synchronized (procimg) {
+                    ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
+                }
             }
             inpregs = procimg.getInputRegisterRange(this.getReference(), this.getWordCount());
         } catch (IllegalAddressException iaex) {

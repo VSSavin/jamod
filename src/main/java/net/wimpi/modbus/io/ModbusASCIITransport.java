@@ -144,7 +144,9 @@ public class ModbusASCIITransport extends ModbusSerialTransport {
                     if (ModbusCoupler.getReference().containsMultipleUnits()) {
                         if (!ModbusCoupler.getReference().containsUnit(in)) continue;
                         if (ModbusCoupler.getReference().getProcessImage() instanceof MultipleUnitsProcessImage) {
-                            ((MultipleUnitsProcessImage)ModbusCoupler.getReference().getProcessImage()).setCurrentUnit(in);
+                            synchronized (ModbusCoupler.getReference().getProcessImage()) {
+                                ((MultipleUnitsProcessImage)ModbusCoupler.getReference().getProcessImage()).setCurrentUnit(in);
+                            }
                         }
                     } else {
                         if (in != ModbusCoupler.getReference().getUnitID()) {

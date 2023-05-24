@@ -78,7 +78,9 @@ public final class WriteMultipleRegistersRequest extends ModbusRequest {
             try {
                 // TODO: realize a setRegisterRange()?
                 if (procimg instanceof MultipleUnitsProcessImage) {
-                    ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
+                    synchronized (procimg) {
+                        ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
+                    }
                 }
                 regs = procimg.getRegisterRange(this.getReference(), this.getWordCount());
                 // 3. set Register values

@@ -94,7 +94,9 @@ public final class ReadInputDiscretesRequest extends ModbusRequest {
         // 2. get inputdiscretes range
         try {
             if (procimg instanceof MultipleUnitsProcessImage) {
-                ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
+                synchronized (procimg) {
+                    ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
+                }
             }
             dins = procimg.getDigitalInRange(this.getReference(), this.getBitCount());
         } catch (IllegalAddressException iaex) {

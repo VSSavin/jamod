@@ -85,7 +85,9 @@ public final class ReadCoilsRequest extends ModbusRequest {
         // 2. get coil range
         try {
             if (procimg instanceof MultipleUnitsProcessImage) {
-                ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
+                synchronized (procimg) {
+                    ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
+                }
             }
             douts = procimg.getDigitalOutRange(this.getReference(), this.getBitCount());
         } catch (IllegalAddressException iaex) {

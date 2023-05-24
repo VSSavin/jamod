@@ -83,7 +83,9 @@ public final class WriteCoilRequest extends ModbusRequest {
         // 2. get coil
         try {
             if (procimg instanceof MultipleUnitsProcessImage) {
-                ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
+                synchronized (procimg) {
+                    ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
+                }
             }
             dout = procimg.getDigitalOut(this.getReference());
             // 3. set coil

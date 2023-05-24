@@ -99,7 +99,9 @@ public final class WriteMultipleCoilsRequest extends ModbusRequest {
         // 2. get coil range
         try {
             if (procimg instanceof MultipleUnitsProcessImage) {
-                ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
+                synchronized (procimg) {
+                    ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
+                }
             }
             douts = procimg.getDigitalOutRange(m_Reference, m_Coils.size());
             // 3. set coils
