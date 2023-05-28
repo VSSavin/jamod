@@ -80,14 +80,15 @@ public final class WriteSingleRegisterRequest extends ModbusRequest {
         ProcessImage procimg = ModbusCoupler.getReference().getProcessImage();
         // 2. get register
         try {
-            if (procimg instanceof MultipleUnitsProcessImage) {
-                synchronized (procimg) {
+            synchronized (procimg) {
+                if (procimg instanceof MultipleUnitsProcessImage) {
                     ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
                 }
+                reg = procimg.getRegister(m_Reference);
+                // 3. set Register
+                reg.setValue(m_Register.toBytes());
             }
-            reg = procimg.getRegister(m_Reference);
-            // 3. set Register
-            reg.setValue(m_Register.toBytes());
+
         } catch (IllegalAddressException iaex) {
             return createExceptionResponse(Modbus.ILLEGAL_ADDRESS_EXCEPTION);
         }

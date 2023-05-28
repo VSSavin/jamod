@@ -77,16 +77,17 @@ public final class WriteMultipleRegistersRequest extends ModbusRequest {
             // 2. get registers
             try {
                 // TODO: realize a setRegisterRange()?
-                if (procimg instanceof MultipleUnitsProcessImage) {
-                    synchronized (procimg) {
+                synchronized (procimg) {
+                    if (procimg instanceof MultipleUnitsProcessImage) {
                         ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
                     }
+                    regs = procimg.getRegisterRange(this.getReference(), this.getWordCount());
+                    // 3. set Register values
+                    for (int i = 0; i < regs.length; i++) {
+                        regs[i].setValue(this.getRegister(i).toBytes());
+                    }
                 }
-                regs = procimg.getRegisterRange(this.getReference(), this.getWordCount());
-                // 3. set Register values
-                for (int i = 0; i < regs.length; i++) {
-                    regs[i].setValue(this.getRegister(i).toBytes());
-                }
+
             } catch (IllegalAddressException iaex) {
                 return createExceptionResponse(Modbus.ILLEGAL_ADDRESS_EXCEPTION);
             }

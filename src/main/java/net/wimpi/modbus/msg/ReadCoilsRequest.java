@@ -84,12 +84,13 @@ public final class ReadCoilsRequest extends ModbusRequest {
         ProcessImage procimg = ModbusCoupler.getReference().getProcessImage();
         // 2. get coil range
         try {
-            if (procimg instanceof MultipleUnitsProcessImage) {
-                synchronized (procimg) {
+            synchronized (procimg) {
+                if (procimg instanceof MultipleUnitsProcessImage) {
                     ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
                 }
+                douts = procimg.getDigitalOutRange(this.getReference(), this.getBitCount());
             }
-            douts = procimg.getDigitalOutRange(this.getReference(), this.getBitCount());
+
         } catch (IllegalAddressException iaex) {
             return createExceptionResponse(Modbus.ILLEGAL_ADDRESS_EXCEPTION);
         }

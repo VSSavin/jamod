@@ -93,12 +93,13 @@ public final class ReadInputDiscretesRequest extends ModbusRequest {
         ProcessImage procimg = ModbusCoupler.getReference().getProcessImage();
         // 2. get inputdiscretes range
         try {
-            if (procimg instanceof MultipleUnitsProcessImage) {
-                synchronized (procimg) {
+            synchronized (procimg) {
+                if (procimg instanceof MultipleUnitsProcessImage) {
                     ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
                 }
+                dins = procimg.getDigitalInRange(this.getReference(), this.getBitCount());
             }
-            dins = procimg.getDigitalInRange(this.getReference(), this.getBitCount());
+
         } catch (IllegalAddressException iaex) {
             return createExceptionResponse(Modbus.ILLEGAL_ADDRESS_EXCEPTION);
         }

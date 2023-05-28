@@ -98,16 +98,17 @@ public final class WriteMultipleCoilsRequest extends ModbusRequest {
         ProcessImage procimg = ModbusCoupler.getReference().getProcessImage();
         // 2. get coil range
         try {
-            if (procimg instanceof MultipleUnitsProcessImage) {
-                synchronized (procimg) {
+            synchronized (procimg) {
+                if (procimg instanceof MultipleUnitsProcessImage) {
                     ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
                 }
+                douts = procimg.getDigitalOutRange(m_Reference, m_Coils.size());
+                // 3. set coils
+                for (int i = 0; i < douts.length; i++) {
+                    douts[i].set(m_Coils.getBit(i));
+                }
             }
-            douts = procimg.getDigitalOutRange(m_Reference, m_Coils.size());
-            // 3. set coils
-            for (int i = 0; i < douts.length; i++) {
-                douts[i].set(m_Coils.getBit(i));
-            }
+
         } catch (IllegalAddressException iaex) {
             return createExceptionResponse(Modbus.ILLEGAL_ADDRESS_EXCEPTION);
         }

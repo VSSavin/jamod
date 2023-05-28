@@ -81,12 +81,13 @@ public final class ReadMultipleRegistersRequest extends ModbusRequest {
         ProcessImage procimg = ModbusCoupler.getReference().getProcessImage();
         // 2. get input registers range
         try {
-            if (procimg instanceof MultipleUnitsProcessImage) {
-                synchronized (procimg) {
+            synchronized (procimg) {
+                if (procimg instanceof MultipleUnitsProcessImage) {
                     ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
                 }
+                regs = procimg.getRegisterRange(this.getReference(), this.getWordCount());
             }
-            regs = procimg.getRegisterRange(this.getReference(), this.getWordCount());
+
         } catch (IllegalAddressException iaex) {
             return createExceptionResponse(Modbus.ILLEGAL_ADDRESS_EXCEPTION);
         }

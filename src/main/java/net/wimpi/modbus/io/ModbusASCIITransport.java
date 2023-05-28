@@ -141,16 +141,16 @@ public class ModbusASCIITransport extends ModbusSerialTransport {
                     m_ByteIn.reset(m_InBuffer, m_ByteInOut.size());
                     in = m_ByteIn.readUnsignedByte();
                     // check message with this slave unit identifier
-                    if (ModbusCoupler.getReference().containsMultipleUnits()) {
-                        if (!ModbusCoupler.getReference().containsUnit(in)) continue;
-                        if (ModbusCoupler.getReference().getProcessImage() instanceof MultipleUnitsProcessImage) {
-                            synchronized (ModbusCoupler.getReference().getProcessImage()) {
+                    synchronized (ModbusCoupler.getReference().getProcessImage()) {
+                        if (ModbusCoupler.getReference().containsMultipleUnits()) {
+                            if (!ModbusCoupler.getReference().containsUnit(in)) continue;
+                            if (ModbusCoupler.getReference().getProcessImage() instanceof MultipleUnitsProcessImage) {
                                 ((MultipleUnitsProcessImage)ModbusCoupler.getReference().getProcessImage()).setCurrentUnit(in);
                             }
-                        }
-                    } else {
-                        if (in != ModbusCoupler.getReference().getUnitID()) {
-                            continue;
+                        } else {
+                            if (in != ModbusCoupler.getReference().getUnitID()) {
+                                continue;
+                            }
                         }
                     }
 

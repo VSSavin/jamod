@@ -82,15 +82,17 @@ public final class WriteCoilRequest extends ModbusRequest {
         ProcessImage procimg = ModbusCoupler.getReference().getProcessImage();
         // 2. get coil
         try {
-            if (procimg instanceof MultipleUnitsProcessImage) {
-                synchronized (procimg) {
+            synchronized (procimg) {
+                if (procimg instanceof MultipleUnitsProcessImage) {
                     ((MultipleUnitsProcessImage)procimg).setCurrentUnit(this.getUnitID());
                 }
+                dout = procimg.getDigitalOut(this.getReference());
+                // 3. set coil
+                dout.set(this.getCoil());
+                // if(Modbus.debug) System.out.println("set coil ref="+this.getReference()+" state=" + this.getCoil());
             }
-            dout = procimg.getDigitalOut(this.getReference());
-            // 3. set coil
-            dout.set(this.getCoil());
-            // if(Modbus.debug) System.out.println("set coil ref="+this.getReference()+" state=" + this.getCoil());
+
+
         } catch (IllegalAddressException iaex) {
             return createExceptionResponse(Modbus.ILLEGAL_ADDRESS_EXCEPTION);
         }
