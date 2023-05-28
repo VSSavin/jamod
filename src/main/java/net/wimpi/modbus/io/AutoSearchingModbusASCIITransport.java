@@ -89,7 +89,7 @@ public class AutoSearchingModbusASCIITransport extends AutoSearchingModbusTransp
                 props.load(new FileReader("conf.properties"));
                 String prop = props.getProperty(SEARCH_TIMEOUT_PROP_NAME);
                 if (prop != null) timeout = Integer.parseInt(prop);
-                else timeout = DEFAULT_SEARCH_REGISTER_VALUE;
+                else timeout = DEFAULT_SEARCH_TIMEOUT_VALUE;
             } catch (IOException | NumberFormatException e) {
                 log.error("Processing conf.properties error!", e);
                 timeout = DEFAULT_SEARCH_TIMEOUT_VALUE;
@@ -193,7 +193,8 @@ public class AutoSearchingModbusASCIITransport extends AutoSearchingModbusTransp
                 request.setReference(overrideSearchRegister > -1 ? overrideSearchRegister : searchDeviceRegister);
                 request.setWordCount(1);
                 try {
-                    getStreamTransport().setTimeout(overrideSearchTimeout > -1 ? overrideSearchTimeout: searchTimeoutMs);
+                    //getStreamTransport().setTimeout(overrideSearchTimeout > -1 ? overrideSearchTimeout: searchTimeoutMs);
+                    getStreamTransport().setTimeout(750);   //TODO fix this later...
                     log.debug(String.format("[%s]: %s", new Date(), "Writing request " + "[" + request.getHexMessage() + "]"));
                     getTransport().writeMessage(request);
                     ModbusResponse response = getTransport().readResponse();
