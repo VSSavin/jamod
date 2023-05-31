@@ -20,9 +20,7 @@ import net.wimpi.modbus.msg.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -56,20 +54,11 @@ public class AutoSearchingModbusASCIITransport extends AutoSearchingModbusTransp
                 reg = DEFAULT_SEARCH_REGISTER_VALUE;
             }
         } else {
-            Properties props = new Properties();
-            try {
-                props.load(new FileReader("conf.properties"));
-                String prop = props.getProperty(SEARCH_REGISTER_PROP_NAME);
-                if (prop != null) reg = Integer.parseInt(prop);
-                else reg = DEFAULT_SEARCH_REGISTER_VALUE;
-            } catch (FileNotFoundException e) {
-                log.warn("File conf.properties not found!");
-                reg = DEFAULT_SEARCH_REGISTER_VALUE;
-            }
-            catch (IOException | NumberFormatException e) {
-                log.warn("Processing conf.properties error!", e);
-                reg = DEFAULT_SEARCH_REGISTER_VALUE;
-            }
+            Properties props =
+                    loadProperties("conf.properties", "../conf.properties", "classpath:/conf.properties");
+            String prop = props.getProperty(SEARCH_REGISTER_PROP_NAME);
+            if (prop != null) reg = Integer.parseInt(prop);
+            else reg = DEFAULT_SEARCH_REGISTER_VALUE;
         }
 
         searchDeviceRegister = reg;
@@ -84,19 +73,39 @@ public class AutoSearchingModbusASCIITransport extends AutoSearchingModbusTransp
             }
         }
         else {
-            Properties props = new Properties();
-            try {
-                props.load(new FileReader("conf.properties"));
-                String prop = props.getProperty(SEARCH_TIMEOUT_PROP_NAME);
-                if (prop != null) timeout = Integer.parseInt(prop);
-                else timeout = DEFAULT_SEARCH_TIMEOUT_VALUE;
-            } catch (IOException | NumberFormatException e) {
-                log.error("Processing conf.properties error!", e);
-                timeout = DEFAULT_SEARCH_TIMEOUT_VALUE;
-            }
+            Properties props =
+                    loadProperties("conf.properties", "../conf.properties", "classpath:/conf.properties");
+            String prop = props.getProperty(SEARCH_TIMEOUT_PROP_NAME);
+            if (prop != null) timeout = Integer.parseInt(prop);
+            else timeout = DEFAULT_SEARCH_TIMEOUT_VALUE;
         }
 
         searchTimeoutMs = timeout;
+    }
+
+    private static Properties loadProperties(String... files) {
+        Properties props = new Properties();
+        for(String fileName : files) {
+            try {
+                if (fileName.startsWith("classpath:")) {
+                    InputStream is = AutoSearchingModbusASCIITransport.class
+                            .getResourceAsStream(fileName.replaceAll("classpath:", ""));
+                    if (is != null) {
+                        props.load(is);
+                    }
+                } else {
+                    props.load(new FileReader(fileName));
+                }
+
+                log.info("Loaded properties from file: " + fileName);
+                return props;
+
+            } catch (IOException | NumberFormatException e) {
+                log.error(String.format("Processing %s error!", fileName), e);
+            }
+        }
+
+        return props;
     }
 
     private final int overrideSearchRegister;
@@ -193,8 +202,7 @@ public class AutoSearchingModbusASCIITransport extends AutoSearchingModbusTransp
                 request.setReference(overrideSearchRegister > -1 ? overrideSearchRegister : searchDeviceRegister);
                 request.setWordCount(1);
                 try {
-                    //getStreamTransport().setTimeout(overrideSearchTimeout > -1 ? overrideSearchTimeout: searchTimeoutMs);
-                    getStreamTransport().setTimeout(750);   //TODO fix this later...
+                    getStreamTransport().setTimeout(overrideSearchTimeout > -1 ? overrideSearchTimeout: searchTimeoutMs);
                     log.debug(String.format("[%s]: %s", new Date(), "Writing request " + "[" + request.getHexMessage() + "]"));
                     getTransport().writeMessage(request);
                     ModbusResponse response = getTransport().readResponse();
